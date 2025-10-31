@@ -23,6 +23,7 @@ vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")          -- block move up
 vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format) -- format code
 vim.keymap.set('n', "<leader>f", ":Pick files<CR>")   -- search file
 vim.keymap.set('n', "<leader>h", ":Pick help<CR>")    -- search doc
+vim.keymap.set('n', "<leader>s", ":update")           -- update
 
 -- plugins
 vim.pack.add {
@@ -31,6 +32,7 @@ vim.pack.add {
     { src = "https://github.com/echasnovski/mini.pick" },
     { src = "https://github.com/neovim/nvim-lspconfig" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" }
+	--{ src = "https://github.com/mason-org/mason.nvim" }
 }
 
 require "mini.pick".setup()
@@ -55,7 +57,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.cmd [[set completeopt+=menuone,noselect,popup]]
 
 -- lsp server
-vim.lsp.enable({ "lua_ls", "ada_language_server-bin", "ada_language_server", "clangd" })
+-- require "mason".setup() 
+
+vim.lsp.enable({ "lua_ls", "ada_language_server-bin", "ada_language_server", "clangd", "vtsls", "svelte" })
 vim.lsp.config("lua_ls",
     {
         settings = {
@@ -77,7 +81,6 @@ vim.lsp.config("clangd", {
     },
     filetypes = { "c", "cpp", "objc", "objcpp" },
 })
-
 
 -- colorscheme
 vim.cmd.colorscheme("vague")
