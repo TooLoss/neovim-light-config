@@ -16,30 +16,49 @@ vim.o.winborder = "rounded"
 
 vim.g.mapleader = " "
 
+-- plugins
+vim.pack.add {
+	{ src = "https://github.com/vague2k/vague.nvim" },
+	{ src = "https://github.com/echasnovski/mini.nvim" },
+	{ src = "https://github.com/dgox16/oldworld.nvim" },
+	{ src = "https://github.com/neovim/nvim-lspconfig" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+	{ src = "https://github.com/chomosuke/typst-preview.nvim" }
+}
+
+require("mini.pick").setup()
+require "typst-preview"
+
+require("mini.pick").registry.files = function()
+  return { source = { name = "files", items = vim.fn.getcompletion("", "file") } }
+end
+
+require("mini.pick").registry.help = function()
+  return { source = { name = "help", items = vim.fn.getcompletion("", "help") } }
+end
+
 -- keymap
 vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)         -- file browser
 vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")          -- block move down
 vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")          -- block move up
 vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format) -- format code
-vim.keymap.set('n', "<leader>f", ":Pick files<CR>")   -- search file
+vim.keymap.set('n', "<leader>f", ":Pick files<CR>")
 vim.keymap.set('n', "<leader>h", ":Pick help<CR>")    -- search doc
-vim.keymap.set('n', "<leader>s", ":update")           -- update
+vim.keymap.set('n', "<leader>bd", require("mini.bufremove").delete)
+vim.keymap.set('n', "<leader>s", "<Cmd>e #<CR>")        -- switch buffer
+vim.keymap.set('n', "<leader>S", "<Cmd>bot sf #<CR>")   -- switch buffer
+vim.keymap.set({'n', 'v'}, "<leader>y", '"+y')          -- system copy        
+vim.keymap.set({'n', 'x'}, "<C-s>", [[<esc>:'<,'>s/\V/]]) -- subtitute mode
+vim.keymap.set('n', "<M-n>", "<cmd>resize +2<CR>")          -- increase height
+vim.keymap.set('n', "<M-n>", "<cmd>resize -2<CR>")          -- decrease height
+vim.keymap.set('n', "<M-n>", "<cmd>vertical resize +5<CR>") -- increase width
+vim.keymap.set('n', "<M-n>", "<cmd>vertical resize -5<CR>") -- decrase width
+vim.keymap.set("n", "<C-q>", ":copen<CR>", { silent = true }) -- open quickfix
+vim.keymap.set("n", "<leader>a",
+	function() vim.fn.setqflist({ { filename = vim.fn.expand("%"), lnum = 1, col = 1, text = vim.fn.expand("%"), } }, "a") end,
+	{ desc = "Add current file to QuickFix" })
 
--- plugins
-vim.pack.add {
-    { src = "https://github.com/vague2k/vague.nvim" },
-    { src = "https://github.com/dgox16/oldworld.nvim" },
-    { src = "https://github.com/echasnovski/mini.pick" },
-    { src = "https://github.com/neovim/nvim-lspconfig" },
-    { src = "https://github.com/nvim-treesitter/nvim-treesitter" }
-	--{ src = "https://github.com/mason-org/mason.nvim" }
-}
-
-require "mini.pick".setup()
-require "nvim-treesitter.configs".setup({
-    ensure_installed = {"ada"},
-    highlight = { enable = true}
-})
+-- plugin config
 
 vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('my.lsp', {}),
@@ -59,7 +78,16 @@ vim.cmd [[set completeopt+=menuone,noselect,popup]]
 -- lsp server
 -- require "mason".setup() 
 
-vim.lsp.enable({ "lua_ls", "ada_language_server-bin", "ada_language_server", "clangd", "vtsls", "svelte" })
+vim.lsp.enable({ 
+    "lua_ls",
+    "ada_language_server-bin",
+    "ada_language_server",
+    "clangd",
+    "tinymist",
+    "svelte",
+    "vtsls"
+})
+
 vim.lsp.config("lua_ls",
     {
         settings = {
@@ -86,3 +114,6 @@ vim.lsp.config("clangd", {
 vim.cmd.colorscheme("vague")
 
 vim.opt.termguicolors = true
+
+-- clipboard
+-- vim.opt.clipboard = 'unnamedplus'
