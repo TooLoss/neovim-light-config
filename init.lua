@@ -19,32 +19,30 @@ vim.g.mapleader = " "
 -- plugins
 vim.pack.add {
 	{ src = "https://github.com/vague2k/vague.nvim" },
-	{ src = "https://github.com/echasnovski/mini.nvim" },
+	{ src = "https://github.com/echasnovski/mini.pick" },
 	{ src = "https://github.com/dgox16/oldworld.nvim" },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim" }
 }
 
-require("mini.pick").setup()
+require "mini.pick".setup()
+
+
+require "nvim-treesitter.configs".setup({
+    ensure_installed = {"ada"},
+    highlight = { enable = true}
+})
+
 require "typst-preview"
 
-require("mini.pick").registry.files = function()
-  return { source = { name = "files", items = vim.fn.getcompletion("", "file") } }
-end
-
-require("mini.pick").registry.help = function()
-  return { source = { name = "help", items = vim.fn.getcompletion("", "help") } }
-end
-
 -- keymap
-vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)         -- file browser
-vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")          -- block move down
-vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")          -- block move up
-vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format) -- format code
-vim.keymap.set('n', "<leader>f", ":Pick files<CR>")
-vim.keymap.set('n', "<leader>h", ":Pick help<CR>")    -- search doc
-vim.keymap.set('n', "<leader>bd", require("mini.bufremove").delete)
+vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)               -- file browser
+vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")                -- block move down
+vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")                -- block move up
+vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format)       -- format code
+vim.keymap.set('n', "<leader>f", ":Pick files<CR>")         -- search file
+vim.keymap.set('n', "<leader>h", ":Pick help<CR>")          -- search doc
 vim.keymap.set('n', "<leader>s", "<Cmd>e #<CR>")        -- switch buffer
 vim.keymap.set('n', "<leader>S", "<Cmd>bot sf #<CR>")   -- switch buffer
 vim.keymap.set({'n', 'v'}, "<leader>y", '"+y')          -- system copy        
@@ -107,7 +105,10 @@ vim.lsp.config("clangd", {
         "--fallback-style=llvm",
         "--header-insertion=iwyu",
     },
-    filetypes = { "c", "cpp", "objc", "objcpp" },
+    filetypes = { "c", "cpp", "objc", "objcpp", "cppm" },
+    init_options = {
+        fallbackFlags = {'--std=c++20'}
+    }
 })
 
 -- colorscheme
