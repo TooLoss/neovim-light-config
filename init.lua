@@ -47,10 +47,11 @@ vim.keymap.set('n', "<leader>s", "<Cmd>e #<CR>")        -- switch buffer
 vim.keymap.set('n', "<leader>S", "<Cmd>bot sf #<CR>")   -- switch buffer
 vim.keymap.set({'n', 'v'}, "<leader>y", '"+y')          -- system copy        
 vim.keymap.set({'n', 'x'}, "<C-s>", [[<esc>:'<,'>s/\V/]]) -- subtitute mode
-vim.keymap.set('n', "<M-n>", "<cmd>resize +2<CR>")          -- increase height
-vim.keymap.set('n', "<M-n>", "<cmd>resize -2<CR>")          -- decrease height
-vim.keymap.set('n', "<M-n>", "<cmd>vertical resize +5<CR>") -- increase width
-vim.keymap.set('n', "<M-n>", "<cmd>vertical resize -5<CR>") -- decrase width
+vim.keymap.set('n', "<M-j>", "<cmd>resize +2<CR>")          -- increase height
+vim.keymap.set('n', "<M-k>", "<cmd>resize -2<CR>")          -- decrease height
+vim.keymap.set('n', "<M-h>", "<cmd>vertical resize +5<CR>") -- increase width
+vim.keymap.set('n', "<M-l>", "<cmd>vertical resize -5<CR>") -- decrase width
+vim.keymap.set('n', "<C-b>", "<cmd>LspClangdSwitchSourceHeader<CR>") -- decrase width
 vim.keymap.set("n", "<C-q>", ":copen<CR>", { silent = true }) -- open quickfix
 vim.keymap.set("n", "<leader>a",
 	function() vim.fn.setqflist({ { filename = vim.fn.expand("%"), lnum = 1, col = 1, text = vim.fn.expand("%"), } }, "a") end,
