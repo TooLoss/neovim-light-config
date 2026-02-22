@@ -23,15 +23,15 @@ vim.pack.add {
 	{ src = "https://github.com/dgox16/oldworld.nvim" },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-	{ src = "https://github.com/chomosuke/typst-preview.nvim" }
+	{ src = "https://github.com/chomosuke/typst-preview.nvim" },
+	{ src = "https://github.com/rose-pine/neovim" }
 }
 
 require "mini.pick".setup()
 
 
-require "nvim-treesitter.configs".setup({
-    ensure_installed = {"ada"},
-    highlight = { enable = true}
+require "nvim-treesitter".setup({
+    highlight = { enable = true }
 })
 
 require "typst-preview"
@@ -79,8 +79,6 @@ vim.cmd [[set completeopt+=menuone,noselect,popup]]
 
 vim.lsp.enable({ 
     "lua_ls",
-    "ada_language_server-bin",
-    "ada_language_server",
     "clangd",
     "tinymist",
     "svelte",
@@ -102,6 +100,7 @@ vim.lsp.config("clangd", {
         "clangd",
         "--background-index",
         "--clang-tidy",
+        "--compile-commands-dir=.",
         "--completion-style=detailed",
         "--fallback-style=llvm",
         "--header-insertion=iwyu",
@@ -113,6 +112,13 @@ vim.lsp.config("clangd", {
 })
 
 -- colorscheme
+require("vague").setup({
+    transparent = true
+})
+require("rose-pine").setup({
+    variant = "auto"
+})
+
 vim.cmd.colorscheme("vague")
 
 vim.opt.termguicolors = true
