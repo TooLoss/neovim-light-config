@@ -13,6 +13,10 @@ vim.o.softtabstop = 4
 vim.o.scrolloff = 10
 vim.o.signcolumn = "yes"
 vim.o.winborder = "rounded"
+vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+vim.bo.cindent = false
+vim.bo.smartindent = false
+vim.bo.autoindent = true
 
 vim.g.mapleader = " "
 
@@ -24,23 +28,34 @@ vim.pack.add {
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim" },
-	{ src = "https://github.com/rose-pine/neovim" }
+	{ src = "https://github.com/rose-pine/neovim" },
+	{ src = "https://github.com/danymat/neogen" }
 }
 
 require "mini.pick".setup()
 
 
 require "nvim-treesitter".setup({
-    highlight = { enable = true }
+    highlight = { enable = true },
+    indent = { enable = true }
 })
 
 require "typst-preview"
+
+require('neogen').setup {
+    enabled = true,
+    input_after_comment = true,
+    languages = {
+        ['cpp.doxygen'] = require('neogen.configurations.cpp')
+    }
+}
 
 -- keymap
 vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)               -- file browser
 vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")                -- block move down
 vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")                -- block move up
 vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format)       -- format code
+vim.keymap.set('n', "<leader>gd", "<Cmd>Neogen<CR>")          -- generate doc
 vim.keymap.set('n', "<leader>f", ":Pick files<CR>")         -- search file
 vim.keymap.set('n', "<leader>h", ":Pick help<CR>")          -- search doc
 vim.keymap.set('n', "<leader>s", "<Cmd>e #<CR>")        -- switch buffer
