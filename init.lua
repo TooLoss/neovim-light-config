@@ -20,6 +20,16 @@ vim.bo.autoindent = true
 
 vim.g.mapleader = " "
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "cpp", "c" },
+  callback = function()
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    vim.bo.cindent = false
+    vim.bo.smartindent = false
+    vim.bo.autoindent = true
+  end
+})
+
 -- plugins
 vim.pack.add {
 	{ src = "https://github.com/vague2k/vague.nvim" },
@@ -28,8 +38,7 @@ vim.pack.add {
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	{ src = "https://github.com/chomosuke/typst-preview.nvim" },
-	{ src = "https://github.com/rose-pine/neovim" },
-	{ src = "https://github.com/danymat/neogen" }
+	{ src = "https://github.com/rose-pine/neovim" }
 }
 
 require "mini.pick".setup()
@@ -41,14 +50,6 @@ require "nvim-treesitter".setup({
 })
 
 require "typst-preview"
-
-require('neogen').setup {
-    enabled = true,
-    input_after_comment = true,
-    languages = {
-        ['cpp.doxygen'] = require('neogen.configurations.cpp')
-    }
-}
 
 -- keymap
 vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)               -- file browser
@@ -126,6 +127,18 @@ vim.lsp.config("clangd", {
     }
 })
 
+require('nvim-treesitter').setup({
+    ensure_installed = { "svelte", "javascript", "typescript", "html", "css", "lua" },
+    
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+    indent = {
+        enable = true
+    }
+})
+
 -- colorscheme
 require("vague").setup({
     transparent = true
@@ -140,3 +153,5 @@ vim.opt.termguicolors = true
 
 -- clipboard
 -- vim.opt.clipboard = 'unnamedplus'
+
+vim.opt.runtimepath:append("/home/bilele/.local/share/nvim/site")
