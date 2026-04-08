@@ -139,6 +139,17 @@ require('nvim-treesitter').setup({
     }
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "svelte",
+    callback = function()
+        -- 0 = buffer actuel, "svelte" = le parser à utiliser
+        local ok, _ = pcall(vim.treesitter.start, 0, "svelte")
+        if not ok then
+            print("Erreur : Le parser Svelte n'est pas installé ou est corrompu")
+        end
+    end
+})
+
 -- colorscheme
 require("vague").setup({
     transparent = true
