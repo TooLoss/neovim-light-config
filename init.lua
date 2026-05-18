@@ -17,6 +17,7 @@ vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 vim.bo.cindent = false
 vim.bo.smartindent = false
 vim.bo.autoindent = true
+vim.opt.colorcolumn = "120"
 
 vim.g.mapleader = " "
 
@@ -69,6 +70,7 @@ vim.keymap.set('n', "<M-h>", "<cmd>vertical resize +5<CR>") -- increase width
 vim.keymap.set('n', "<M-l>", "<cmd>vertical resize -5<CR>") -- decrase width
 vim.keymap.set('n', "<C-b>", "<cmd>LspClangdSwitchSourceHeader<CR>") -- decrase width
 vim.keymap.set("n", "<C-q>", ":copen<CR>", { silent = true }) -- open quickfix
+vim.keymap.set('n', '<leader>q', vim.lsp.buf.format) -- format document
 vim.keymap.set("n", "<leader>a",
 	function() vim.fn.setqflist({ { filename = vim.fn.expand("%"), lnum = 1, col = 1, text = vim.fn.expand("%"), } }, "a") end,
 	{ desc = "Add current file to QuickFix" })
@@ -158,7 +160,9 @@ require("rose-pine").setup({
     variant = "auto"
 })
 
-vim.cmd.colorscheme("vague")
+vim.cmd.colorscheme("rose-pine-moon")
+vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 
 vim.opt.termguicolors = true
 
