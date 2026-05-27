@@ -98,9 +98,6 @@ require("mini.pick").setup()
 vim.pack.add({ repo .. "chomosuke/typst-preview.nvim"})
 require("typst-preview").setup({})
 
-vim.pack.add({ repo .. "catgoose/nvim-colorizer.lua" })
-require("colorizer").setup({})
-
 vim.cmd.packadd('nohlsearch')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('nvim.difftool')
