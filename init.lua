@@ -18,6 +18,7 @@ vim.bo.cindent = false
 vim.bo.smartindent = false
 vim.bo.autoindent = true
 vim.opt.colorcolumn = "120"
+vim.opt.rtp:append("/home/bilele/.local/share/nvim/site")
 
 vim.g.mapleader = " "
 
@@ -54,8 +55,8 @@ require "typst-preview"
 
 -- keymap
 vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)               -- file browser
-vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")                -- block move down
-vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")                -- block move up
+-- vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")                -- block move down
+-- vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")                -- block move up
 vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format)       -- format code
 vim.keymap.set('n', "<leader>gd", "<Cmd>Neogen<CR>")          -- generate doc
 vim.keymap.set('n', "<leader>f", ":Pick files<CR>")         -- search file
@@ -100,7 +101,8 @@ vim.lsp.enable({
     "clangd",
     "tinymist",
     "svelte",
-    "vtsls"
+    "vtsls",
+    "ltex"
 })
 
 vim.lsp.config("lua_ls",
@@ -130,8 +132,8 @@ vim.lsp.config("clangd", {
 })
 
 require('nvim-treesitter').setup({
-    ensure_installed = { "svelte", "javascript", "typescript", "html", "css", "lua" },
-    
+    ensure_installed = { "svelte", "javascript", "typescript", "html", "css", "lua", "typst" },
+    install_dir = vim.fn.stdpath('data') .. '/site',
     highlight = {
         enable = true,
         additional_vim_regex_highlighting = false,
@@ -140,16 +142,45 @@ require('nvim-treesitter').setup({
         enable = true
     }
 })
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { '<filetype>' },
+  callback = function() vim.treesitter.start() end,
+})
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "svelte",
-    callback = function()
-        -- 0 = buffer actuel, "svelte" = le parser à utiliser
-        local ok, _ = pcall(vim.treesitter.start, 0, "svelte")
-        if not ok then
-            print("Erreur : Le parser Svelte n'est pas installé ou est corrompu")
-        end
+vim.api.nvim_create_autocmd('FileType', {
+  desc = 'Start tree-sitter for some languages (when it do not work)',
+  callback = function(args)
+    local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+    if lang then
+      pcall(vim.treesitter.start, args.buf, lang)
     end
+  end,
+})
+
+vim.lsp.config("ltex", {
+    root_dir = function(filename, bufnr)
+        return vim.fs.root(bufnr, { ".git" }) or vim.fn.getcwd()
+    end,
+    settings = {
+        ltex = {
+            language = "fr",
+            additionalRules = {
+                enablePickyRules = true,
+                motherTongue = "fr",
+            },
+        },
+    },
+    filetypes = { "markdown", "tex", "text", "gitcommit", "typst" },
+})
+
+vim.diagnostic.config({
+  virtual_text = false,
+  underline = true,
+  signs = true,
+  float = {
+    border = "rounded",
+    source = "always",
+  },
 })
 
 -- colorscheme
