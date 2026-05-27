@@ -1,6 +1,9 @@
--- Lighweight Configuration
+--LOSS-NVIM-LIGHTCONFIG--
 
--- parameters
+-- Thank's to https://github.com/ymic9963/nvim/ for inspiring me doing this config
+
+--SETTINGS--
+vim.g.mapleader = " "
 vim.o.number = true
 vim.o.relativenumber = true
 vim.o.wrap = false
@@ -13,108 +16,109 @@ vim.o.softtabstop = 4
 vim.o.scrolloff = 10
 vim.o.signcolumn = "yes"
 vim.o.winborder = "rounded"
-vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+vim.opt.pumborder= "rounded"
 vim.bo.cindent = false
 vim.bo.smartindent = false
 vim.bo.autoindent = true
-vim.opt.colorcolumn = "120"
-vim.opt.rtp:append("/home/bilele/.local/share/nvim/site")
+vim.opt.swapfile = false
+vim.opt.undofile = true
+vim.opt.colorcolumn = "99"
+vim.g.netrw_special_syntax = true
+vim.g.netrw_liststyle = 1        -- style netrw
+vim.g.netrw_banner = 0           -- delete banner
+vim.opt.path:append{"**"}        -- Use :find for all subdirectories
+vim.opt.completeopt = { "menuone", "noselect", "popup", "fuzzy" }
+vim.opt.wildoptions:append{"fuzzy"} -- Fuzzy wild menu
+vim.opt.foldenable = false
+vim.opt.foldcolumn = "0"
+vim.opt.foldtext = ""
+vim.opt.foldlevelstart = 99
 
-vim.g.mapleader = " "
+--KEYMAPS--
+vim.keymap.set("n", "<leader>o", ":Explore .<CR>", {desc = "Netrw explore from cwd"})
+vim.keymap.set("n", "<leader>O", ":Explore <CR>", {desc= "Netrw explore from file directory"})
+vim.keymap.set("n", "<leader>re", ":%s/<C-R><C-W>/", {desc = "Shortcut to replace current word under cursor"})
+vim.keymap.set({"n", "v"}, "<leader>p", [["+p]], {desc = "Paste from system clipboard"})
+vim.keymap.set({"n", "v"}, "<leader>y", [["+y]], {desc = "Copy to system clipboard"})
+vim.keymap.set("v", "<leader>j", ":m '>+1<CR>gv=gv", {desc = "Move a selection down"})
+vim.keymap.set("v", "<leader>k", ":m '<-2<CR>gv=gv", {desc = "Move a selection up"})
+vim.keymap.set("v", "<", "<gv", {desc = "Indent left and reselect"})
+vim.keymap.set("v", ">", ">gv", {desc = "Indent right and reselect"})
+vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", {desc = "Increase window height"})
+vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", {desc = "Decrease window height"})
+vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", {desc = "Decrease window width"})
+vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", {desc = "Increase window width"})
+vim.keymap.set('n', "<C-b>", "<cmd>LspClangdSwitchSourceHeader<CR>", {desc = "Switch source/header"})
+vim.keymap.set('n', "<leader>f", ":Pick files<CR>", {desc= "Search files"})
+vim.keymap.set('n', "<leader>h", ":Pick help<CR>", {desc= "Search helps"})
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "cpp", "c" },
-  callback = function()
-    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    vim.bo.cindent = false
-    vim.bo.smartindent = false
-    vim.bo.autoindent = true
-  end
+--END-KEYMAPS--
+
+--PLUGINS--
+local repo = "https://github.com/"
+
+vim.pack.add({ repo .. "neovim/nvim-lspconfig"})
+
+--colorscheme--
+vim.o.termguicolors = true
+vim.pack.add({ repo .. "vague2k/vague.nvim"})
+vim.pack.add({ repo .. "rose-pine/neovim"})
+vim.cmd.packadd('vague.nvim')
+vim.cmd.packadd('neovim')
+require("vague").setup({
+    transparent = true
+})
+require("rose-pine").setup({
+    variant = "auto",
+    styles = {
+        bold = true,
+        italic = true,
+        transparency = true,
+    },
+})
+vim.cmd.colorscheme('rose-pine-moon')
+--end-colorscheme--
+
+vim.pack.add({ repo .. "mason-org/mason.nvim"})
+require("mason").setup()
+
+vim.pack.add({ repo .. "nvim-treesitter/nvim-treesitter" })
+
+vim.pack.add({ repo .. "nvim-treesitter/nvim-treesitter-context" })
+require("treesitter-context").setup({
+    max_lines = 3,
 })
 
--- plugins
-vim.pack.add {
-	{ src = "https://github.com/vague2k/vague.nvim" },
-	{ src = "https://github.com/echasnovski/mini.pick" },
-	{ src = "https://github.com/dgox16/oldworld.nvim" },
-	{ src = "https://github.com/neovim/nvim-lspconfig" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-	{ src = "https://github.com/chomosuke/typst-preview.nvim" },
-	{ src = "https://github.com/rose-pine/neovim" }
+vim.pack.add({ repo .. "nvim-mini/mini.test" })
+require("mini.test").setup()
+
+vim.pack.add({ repo .. "nvim-mini/mini.pick" })
+require("mini.pick").setup()
+
+vim.pack.add({ repo .. "chomosuke/typst-preview.nvim"})
+require("typst-preview").setup({})
+
+vim.pack.add({ repo .. "catgoose/nvim-colorizer.lua" })
+require("colorizer").setup({})
+
+vim.cmd.packadd('nohlsearch')
+vim.cmd.packadd('nvim.undotree')
+vim.cmd.packadd('nvim.difftool')
+
+--LSP--
+local ensure_installed = {
+    "clangd",
+    "lua-language-server"
 }
 
-require "mini.pick".setup()
+-- auto install Mason
+local installed_package_names = require('mason-registry').get_installed_package_names()
+for _, v in ipairs(ensure_installed) do
+    if not vim.tbl_contains(installed_package_names, v) then
+        vim.cmd(":MasonInstall " .. v)
+    end
+end
 
-
-require "nvim-treesitter".setup({
-    highlight = { enable = true },
-    indent = { enable = true }
-})
-
-require "typst-preview"
-
--- keymap
-vim.keymap.set('n', "<leader>pv", vim.cmd.Ex)               -- file browser
--- vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")                -- block move down
--- vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")                -- block move up
-vim.keymap.set('n', "<leader>lf", vim.lsp.buf.format)       -- format code
-vim.keymap.set('n', "<leader>gd", "<Cmd>Neogen<CR>")          -- generate doc
-vim.keymap.set('n', "<leader>f", ":Pick files<CR>")         -- search file
-vim.keymap.set('n', "<leader>h", ":Pick help<CR>")          -- search doc
-vim.keymap.set('n', "<leader>s", "<Cmd>e #<CR>")        -- switch buffer
-vim.keymap.set('n', "<leader>S", "<Cmd>bot sf #<CR>")   -- switch buffer
-vim.keymap.set({'n', 'v'}, "<leader>y", '"+y')          -- system copy        
-vim.keymap.set({'n', 'x'}, "<C-s>", [[<esc>:'<,'>s/\V/]]) -- subtitute mode
-vim.keymap.set('n', "<M-j>", "<cmd>resize +2<CR>")          -- increase height
-vim.keymap.set('n', "<M-k>", "<cmd>resize -2<CR>")          -- decrease height
-vim.keymap.set('n', "<M-h>", "<cmd>vertical resize +5<CR>") -- increase width
-vim.keymap.set('n', "<M-l>", "<cmd>vertical resize -5<CR>") -- decrase width
-vim.keymap.set('n', "<C-b>", "<cmd>LspClangdSwitchSourceHeader<CR>") -- decrase width
-vim.keymap.set("n", "<C-q>", ":copen<CR>", { silent = true }) -- open quickfix
-vim.keymap.set('n', '<leader>q', vim.lsp.buf.format) -- format document
-vim.keymap.set("n", "<leader>a",
-	function() vim.fn.setqflist({ { filename = vim.fn.expand("%"), lnum = 1, col = 1, text = vim.fn.expand("%"), } }, "a") end,
-	{ desc = "Add current file to QuickFix" })
-
--- plugin config
-
-vim.api.nvim_create_autocmd('LspAttach', {
-    group = vim.api.nvim_create_augroup('my.lsp', {}),
-    callback = function(args)
-        local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-        if client:supports_method('textDocument/completion') then
-            -- Optional: trigger autocompletion on EVERY keypress. May be slow!
-            local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
-            client.server_capabilities.completionProvider.triggerCharacters = chars
-            vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
-        end
-    end,
-})
-
-vim.cmd [[set completeopt+=menuone,noselect,popup]]
-
--- lsp server
--- require "mason".setup() 
-
-vim.lsp.enable({ 
-    "lua_ls",
-    "clangd",
-    "tinymist",
-    "svelte",
-    "vtsls",
-    "ltex"
-})
-
-vim.lsp.config("lua_ls",
-    {
-        settings = {
-            Lua = {
-                workspace = {
-                    library = vim.api.nvim_get_runtime_file("", true),
-                }
-            }
-        }
-    }) -- correct init.lua errors
 vim.lsp.config("clangd", {
     cmd = {
         "clangd",
@@ -131,76 +135,155 @@ vim.lsp.config("clangd", {
     }
 })
 
-require('nvim-treesitter').setup({
-    ensure_installed = { "svelte", "javascript", "typescript", "html", "css", "lua", "typst" },
-    install_dir = vim.fn.stdpath('data') .. '/site',
-    highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = false,
-    },
-    indent = {
-        enable = true
-    }
-})
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { '<filetype>' },
-  callback = function() vim.treesitter.start() end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-  desc = 'Start tree-sitter for some languages (when it do not work)',
-  callback = function(args)
-    local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
-    if lang then
-      pcall(vim.treesitter.start, args.buf, lang)
-    end
-  end,
-})
-
-vim.lsp.config("ltex", {
-    root_dir = function(filename, bufnr)
-        return vim.fs.root(bufnr, { ".git" }) or vim.fn.getcwd()
-    end,
+vim.lsp.config("lua_ls", {
     settings = {
-        ltex = {
-            language = "fr",
-            additionalRules = {
-                enablePickyRules = true,
-                motherTongue = "fr",
+        Lua = {
+            runtime = {
+                version = "LuaJIT",
+            },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
             },
         },
     },
-    filetypes = { "markdown", "tex", "text", "gitcommit", "typst" },
+    on_attach = function ()
+        vim.api.nvim_set_hl(0, '@lsp.type.variable.lua', {})
+    end
 })
 
+-- From https://www.reddit.com/r/neovim/comments/1p0a576/comment/nphwtrg
+-- load from mason
+local installed_packages = require("mason-registry").get_installed_packages()
+local installed_lsp_names = vim.iter(installed_packages):fold({}, function(acc, pack)
+    table.insert(acc, pack.spec.neovim and pack.spec.neovim.lspconfig)
+    return acc
+end)
+
+vim.lsp.enable(installed_lsp_names)
+
+-- Lsp diagnostics
 vim.diagnostic.config({
-  virtual_text = false,
-  underline = true,
-  signs = true,
-  float = {
-    border = "rounded",
-    source = "always",
-  },
+    virtual_text = false,
+    signs = true,
+    underline = true,
+    update_in_insert = true,
+    severity_sort = true,
 })
 
--- colorscheme
-require("vague").setup({
-    transparent = true
+--END-LSP--
+
+--AUTOCOMMANDS--
+local config_augroup = vim.api.nvim_create_augroup("Config", { clear = true })
+
+-- Builtin LSP autocompletion
+-- From https://www.reddit.com/r/neovim/comments/1mhusus/comment/n733xp9
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = config_augroup,
+    callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if not client then return end
+
+        -- Autocompletion
+        if client:supports_method("textDocument/completion") then
+            -- These three lines here are for auto-triggering on any keypress, I am unsure if I want this or not
+            -- local chars = {}
+            -- for i = 32, 126 do table.insert(chars, string.char(i)) end
+            -- client.server_capabilities.completionProvider.triggerCharacters = chars
+            vim.lsp.completion.enable( true, client.id, ev.buf,
+            {
+                autotrigger = true,
+                convert = function(item)
+                    local abbr = item.label
+                    abbr = #abbr > 30 and abbr:sub(1, 29) .. "…" or abbr
+
+                    local menu = item.detail or ""
+                    menu = #menu > 30 and menu:sub(1, 29) .. "…" or menu
+
+                    return { abbr = abbr, menu = menu }
+                end
+            })
+        end
+
+        -- Documentation formatting when using auto-completion
+        if client:supports_method("completionItem/resolve") then
+            local _, cancel_prev = nil, function() end
+            vim.api.nvim_create_autocmd("CompleteChanged", {
+                group = config_augroup,
+                buffer = ev.buf,
+                callback = function(event)
+                    cancel_prev()
+                    local info = vim.fn.complete_info({ "selected" })
+                    local completionItem = vim.tbl_get(vim.v.completed_item, "user_data", "nvim", "lsp", "completion_item")
+                    if not completionItem then return end
+                    cancel_prev = vim.lsp.buf_request_all( event.buf, vim.lsp.protocol.Methods.completionItem_resolve, completionItem,
+                    function(results)
+                        if not results then return end
+                        for _, v in ipairs(results) do
+                            local item = v.result
+                            local docs = (item.documentation or {}).value
+                            local win = vim.api.nvim__complete_set(info["selected"], { info = docs })
+                            if win.winid and vim.api.nvim_win_is_valid(win.winid) then
+                                vim.treesitter.start(win.bufnr, item.documentation.kind)
+                                vim.wo[win.winid].conceallevel = 3
+                            end
+                        end
+                    end)
+                end,
+            })
+        end
+    end
 })
-require("rose-pine").setup({
-    variant = "auto",
-    styles = {
-        bold = true,
-        italic = true,
-        transparency = true,
-    },
+
+-- From https://github.com/nvim-treesitter/nvim-treesitter/issues/8221#issuecomment-3436658280
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { '*' },
+    group = config_augroup,
+    callback = function(args)
+        local treesitter = require('nvim-treesitter')
+        local lang = vim.treesitter.language.get_lang(args.match)
+        if vim.list_contains(treesitter.get_available(), lang) then
+            if not vim.list_contains(treesitter.get_installed(), lang) then
+                treesitter.install(lang):wait()
+            end
+            vim.treesitter.start(args.buf)
+        end
+    end,
+    desc = "Enable nvim-treesitter and install parser if not installed"
 })
 
-vim.cmd.colorscheme("rose-pine-moon")
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "cpp", "c" },
+    callback = function()
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        vim.bo.cindent = false
+        vim.bo.smartindent = false
+        vim.bo.autoindent = true
+    end
+})
 
-vim.opt.termguicolors = true
+vim.api.nvim_create_autocmd("WinEnter", {
+    pattern = { "*" },
+    group = config_augroup,
+    callback = function()
+        vim.fn.matchadd("TODO", 'TODO:')
+        vim.fn.matchadd("INFO", 'INFO:')
+        vim.fn.matchadd("FIX", 'FIX:')
+        vim.fn.matchadd("BUG", 'BUG:')
+    end,
+    desc = "Make colorscheme Special Comments at every window"
+})
 
--- clipboard
--- vim.opt.clipboard = 'unnamedplus'
+--END-AUTOCOMMANDS--
 
-vim.opt.runtimepath:append("/home/bilele/.local/share/nvim/site")
+--COMMANDS--
+-- From https://www.reddit.com/r/neovim/comments/1qb0qbf/i_replaced_whichkey_plugin_with_basic_lua_script/
+vim.api.nvim_create_user_command('ListCustomKeymaps', function()
+    local keymaps = vim.api.nvim_exec2("verbose map", { output = true }).output
+    local lines = vim.split(keymaps, "\n")
+    local buff = vim.api.nvim_create_buf(true, true)
+    vim.api.nvim_set_current_buf(buff)
+    vim.api.nvim_buf_set_lines(buff, 0, -1, false, lines)
+end,
+{ desc = 'List keymaps' })
+
+--END-COMMANDS--
