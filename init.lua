@@ -96,7 +96,21 @@ vim.pack.add({ repo .. "nvim-mini/mini.pick" })
 require("mini.pick").setup()
 
 vim.pack.add({ repo .. "chomosuke/typst-preview.nvim"})
-require("typst-preview").setup({})
+require("typst-preview").setup({
+    port = 59732,
+    dependencies_bin = {
+        tinymist = "tinymist",
+    },
+})
+
+vim.lsp.config("tinymist", {
+    settings = {
+        exportPdf = "never",
+        fontPaths = {
+            "${workspaceFolder}/fonts"
+        },
+    }
+})
 
 vim.cmd.packadd('nohlsearch')
 vim.cmd.packadd('nvim.undotree')
