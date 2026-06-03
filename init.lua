@@ -23,9 +23,13 @@ vim.bo.autoindent = true
 vim.opt.swapfile = false
 vim.opt.undofile = true
 vim.opt.colorcolumn = "99"
-vim.g.netrw_special_syntax = true
-vim.g.netrw_liststyle = 1        -- style netrw
-vim.g.netrw_banner = 0           -- delete banner
+vim.g.netrw_keepdir = 0
+vim.opt.autochdir = true
+vim.g.netrw_sort_sequence = [[[\/]$,*]]
+vim.g.netrw_banner = 0
+vim.g.netrw_liststyle = 3
+vim.g.netrw_browse_split = 0
+vim.g.netrw_winsize = 25
 vim.opt.path:append{"**"}        -- Use :find for all subdirectories
 vim.opt.completeopt = { "menuone", "noselect", "popup", "fuzzy" }
 vim.opt.wildoptions:append{"fuzzy"} -- Fuzzy wild menu
